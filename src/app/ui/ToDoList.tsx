@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import getToDos from "@axios/getToDos";
+import postToDo from "@axios/postToDo";
 
 interface ToDo {
   userId: number;
@@ -10,15 +12,21 @@ interface ToDo {
   completed: boolean;
 }
 
-const Navigation = () => {
+const ToDoList = () => {
   const [toDos, setToDos] = useState<ToDo[]>([]);
+
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/todos")
-      .then((res) => res.json())
-      .then((data) => {
-        setToDos(data);
-      });
+    (async () => {
+      const data = await getToDos();
+      setToDos(data);
+    })();
   }, []);
+
+  const handlePost = async () => {
+    await postToDo();
+    const data = await getToDos();
+    setToDos(data);
+  };
 
   return (
     <>
@@ -31,8 +39,11 @@ const Navigation = () => {
           </div>
         );
       })}
+      <button onClick={handlePost}>
+        test 디비에 todos 콜렉션에 데이터 하나 넣겠습니다.
+      </button>
     </>
   );
 };
 
-export default Navigation;
+export default ToDoList;
